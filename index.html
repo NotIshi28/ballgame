@@ -1,0 +1,102 @@
+<html><head>
+  <title>3D Ball Rolling Game - Multiple Levels with Holes</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { width: 100%; height: 100% }
+    #instructions {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      background-color: rgba(0,0,0,0.5);
+      padding: 10px;
+      border-radius: 5px;
+    }
+    #winMessage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+      font-family: 'Arial Black', sans-serif;
+      font-size: 72px;
+      text-align: center;
+      text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00;
+      opacity: 0;
+      transition: opacity 1s;
+      display: none;
+    }
+    #fireworks {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    #coinCount {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: gold;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      background-color: rgba(0,0,0,0.5);
+      padding: 10px;
+      border-radius: 5px;
+    }
+    #levelInfo {
+      position: absolute;
+      bottom: 10px;
+      left: 10px;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      background-color: rgba(0,0,0,0.5);
+      padding: 10px;
+      border-radius: 5px;
+    }
+    #credits {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      background-color: rgba(0,0,0,0.5);
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+  </head>
+  <body>
+  <div id="instructions">
+    Use WASD or Arrow keys to roll the rainbow ball.<br>
+    Collect all spinning coins and reach the checkered platform to advance to the next level!<br>
+    Be careful of holes - falling in one will reset the level!
+  </div>
+  <div id="winMessage">
+    <span>Y</span><span>o</span><span>u</span> <span>W</span><span>i</span><span>n</span><span>!</span>
+  </div>
+  <div id="fireworks"></div>
+  <div id="coinCount">Coins Remaining: 0</div>
+  <div id="levelInfo">Level: 1</div>
+  <div id="credits">Created by NotIshi28</div>
+  <div id="timer">Time: 00:00.000</div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+  <script>
+    let scene, camera, renderer, ball, platform;
+    let moveForward = false, moveBackward = false, moveLeft = false, moveRight = false;
+    let velocity = new THREE.Vector3();
+    let acceleration = new THREE.Vector3();
+    let walls = [];
+    let coins = [];
+    let holes = [];
+    let coinsRemaining = 0;
+    let clouds = [];
+  </script>
+  </body></html>
