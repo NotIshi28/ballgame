@@ -710,6 +710,107 @@
       return texture;
     }
 
+    function onKeyDown(event) {
+      switch (event.code) {
+        case 'KeyW':
+        case 'ArrowUp':
+          moveForward = true;
+          break;
+        case 'KeyS':
+        case 'ArrowDown':
+          moveBackward = true;
+          break;
+        case 'KeyA':
+        case 'ArrowLeft':
+          moveLeft = true;
+          break;
+        case 'KeyD':
+        case 'ArrowRight':
+          moveRight = true;
+          break;
+      }
+    }
+  
+    function onKeyUp(event) {
+      switch (event.code) {
+        case 'KeyW':
+        case 'ArrowUp':
+          moveForward = false;
+          break;
+        case 'KeyS':
+        case 'ArrowDown':
+          moveBackward = false;
+          break;
+        case 'KeyA':
+        case 'ArrowLeft':
+          moveLeft = false;
+          break;
+        case 'KeyD':
+        case 'ArrowRight':
+          moveRight = false;
+          break;
+      }
+    }
+  
+    function handleCollision(position, wall) {
+      const ballRadius = 0.5;
+      const wallBox = new THREE.Box3().setFromObject(wall);
+      const closestPoint = wallBox.clampPoint(position, new THREE.Vector3());
+      const normal = position.clone().sub(closestPoint).normalize();
+      const penetrationDepth = ballRadius - position.distanceTo(closestPoint);
+  
+      if (penetrationDepth > 0) {
+        position.add(normal.multiplyScalar(penetrationDepth));
+        
+        // Project velocity onto the wall plane
+        const dot = velocity.dot(normal);
+        velocity.sub(normal.multiplyScalar(dot));
+      }
+  
+      return position;
+    }
+  
+    function checkCollision(position) {
+      let collided = false;
+  
+      for (let wall of walls) {
+        const wallBox = new THREE.Box3().setFromObject(wall);
+        const sphere = new THREE.Sphere(position, 0.5);
+  
+        if (wallBox.intersectsSphere(sphere)) {
+          position = handleCollision(position, wall);
+          collided = true;
+        }
+      }
+  
+      return { collided, position };
+    }
+  
+    function checkCoinCollision() {
+      const ballRadius = 0.5;
+      for (let i = coins.length - 1; i >= 0; i--) {
+        if (ball.position.distanceTo(coins[i].position) < ballRadius + 0.3) {
+          scene.remove(coins[i]);
+          coins.splice(i, 1);
+          coinsRemaining--;
+          updateCoinCounter();
+          sounds.coinCollect.play();
+        }
+      }
+    }
+  
+    function checkHoleCollision() {
+      const ballRadius = 0.5;
+      for (let hole of holes) {
+        if (ball.position.distanceTo(hole.position) < ballRadius + 0.5) {
+          sounds.fallInHole.play();
+          resetLevel();
+          return true;
+        }
+      }
+      return false;
+    }
+
 
   </script>
   </body></html>
