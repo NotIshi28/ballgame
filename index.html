@@ -399,7 +399,109 @@
       updateCoinCounter();
     }
   
-    
+    function createHoles(level) {
+      const holeGeometry = new THREE.CircleGeometry(0.5, 32);
+      const holeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000 });
+      
+      switch(level) {
+        case 1:
+          createHole(-3, 0.01, -3, holeGeometry, holeMaterial);
+          createHole(3, 0.01, 3, holeGeometry, holeMaterial);
+          break;
+        case 2:
+          createHole(-6, 0.01, 0, holeGeometry, holeMaterial);
+          createHole(6, 0.01, 0, holeGeometry, holeMaterial);
+          createHole(0, 0.01, -6, holeGeometry, holeMaterial);
+          createHole(0, 0.01, 6, holeGeometry, holeMaterial);
+          break;
+        case 3:
+          for (let i = -6; i <= 6; i += 4) {
+            for (let j = -6; j <= 6; j += 4) {
+              if (i !== 0 || j !== 0) {
+                createHole(i, 0.01, j, holeGeometry, holeMaterial);
+              }
+            }
+          }
+          break;
+        case 4:
+          for (let i = -8; i <= 8; i += 4) {
+            for (let j = -8; j <= 8; j += 4) {
+              if (i !== 0 || j !== 0) {
+                createHole(i, 0.01, j, holeGeometry, holeMaterial);
+              }
+            }
+          }
+          createHole(0, 0.01, 0, holeGeometry, holeMaterial);
+          break;
+        case 5:
+          // Many holes for the final level
+          for (let i = -9; i <= 9; i += 3) {
+            for (let j = -9; j <= 9; j += 3) {
+              if ((i !== -9 || j !== -9) && (i !== 9 || j !== -9)) { // Avoid start and end positions
+                createHole(i, 0.01, j, holeGeometry, holeMaterial);
+              }
+            }
+          }
+          break;
+      }
+    }
+  
+    function createHole(x, y, z, geometry, material) {
+      const hole = new THREE.Mesh(geometry, material);
+      hole.position.set(x, y, z);
+      hole.rotation.x = -Math.PI / 2;
+      scene.add(hole);
+      holes.push(hole);
+    }
+  
+    function createWinPlatform(level) {
+      const winPlatformGeometry = new THREE.BoxGeometry(2, 0.1, 2);
+      const winPlatformMaterial = new THREE.MeshPhongMaterial({ 
+        map: createCheckerboardTexture()
+      });
+      const winPlatform = new THREE.Mesh(winPlatformGeometry, winPlatformMaterial);
+      switch(level) {
+        case 1:
+          winPlatform.position.set(-8, 0, 8);
+          break;
+        case 2:
+          winPlatform.position.set(8, 0, -8);
+          break;
+        case 3:
+          winPlatform.position.set(0, 0, 0);
+          break;
+        case 4:
+          winPlatform.position.set(9, 0, 9);
+          break;
+        case 5:
+          winPlatform.position.set(9, 0, -9);
+          break;
+      }
+      winPlatform.receiveShadow = true;
+      scene.add(winPlatform);
+    }
+  
+    function createRainbowTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 256;
+      const context = canvas.getContext('2d');
+  
+      const gradient = context.createLinearGradient(0, 0, 0, 256);
+      gradient.addColorStop(0, 'red');
+      gradient.addColorStop(1/6, 'orange');
+      gradient.addColorStop(2/6, 'yellow');
+      gradient.addColorStop(3/6, 'green');
+      gradient.addColorStop(4/6, 'blue');
+      gradient.addColorStop(5/6, 'indigo');
+      gradient.addColorStop(1, 'violet');
+  
+      context.fillStyle = gradient;
+      context.fillRect(0, 0, 256, 256);
+  
+      const texture = new THREE.CanvasTexture(canvas);
+      return texture;
+    }
 
 
   </script>
