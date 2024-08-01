@@ -812,5 +812,100 @@
     }
 
 
+
+    function resetLevel() {
+      ball.position.set(-9, 0.5, -9);
+      velocity.set(0, 0, 0);
+      loadLevel(currentLevel);
+    }
+  
+    function updateCoinCounter() {
+      document.getElementById('coinCount').textContent = `Coins Remaining: ${coinsRemaining}`;
+    }
+  
+    function checkWinCondition() {
+      let winPosition;
+      switch(currentLevel) {
+        case 1:
+          winPosition = new THREE.Vector3(-8, 0, 8);
+          break;
+        case 2:
+          winPosition = new THREE.Vector3(8, 0, -8);
+          break;
+        case 3:
+          winPosition = new THREE.Vector3(0, 0, 0);
+          break;
+        case 4:
+          winPosition = new THREE.Vector3(9, 0, 9);
+          break;
+        case 5:
+          winPosition = new THREE.Vector3(9, 0, -9);
+          break;
+      }
+      
+      if (ball.position.distanceTo(winPosition) < 1 && coinsRemaining === 0) {
+        if (currentLevel < totalLevels) {
+          currentLevel++;
+          sounds.levelComplete.play();
+          loadLevel(currentLevel);
+        } else if (!gameWon) {
+          gameWon = true;
+          showWinScreen();
+        }
+      }
+    }
+  
+    function showWinScreen() {
+      sounds.backgroundMusic.stop();
+      sounds.winSound.play();
+      
+      // Show win message
+      const winMessage = document.getElementById('winMessage');
+      winMessage.style.display = 'block';
+      setTimeout(() => {
+        winMessage.style.opacity = 1;
+      }, 100);
+  
+      // Create fireworks
+      createFireworks();
+  
+      // Rotate camera around the ball
+      const radius = 10;
+      let angle = 0;
+      function rotateCameraWin() {
+        if (gameWon) {
+          angle += 0.01;
+          camera.position.x = ball.position.x + radius * Math.cos(angle);
+          camera.position.z = ball.position.z + radius * Math.sin(angle);
+          camera.lookAt(ball.position);
+          requestAnimationFrame(rotateCameraWin);
+        }
+      }
+      rotateCameraWin();
+  
+      // Stop the timer
+      clearInterval(timerInterval);
+    }
+  
+    function createFireworks() {
+      const fireworksContainer = document.getElementById('fireworks');
+      for (let i = 0; i < 100; i++) {
+        setTimeout(() => {
+          const firework = document.createElement('div');
+          firework.style.position = 'absolute';
+          firework.style.width = '5px';
+          firework.style.height = '5px';
+          firework.style.borderRadius = '50%';
+          firework.style.backgroundColor = getRandomColor();
+          firework.style.left = Math.random() * 100 + '%';
+          firework.style.top = Math.random() * 100 + '%';
+          fireworksContainer.appendChild(firework);
+  
+          animateFirework(firework);
+        }, Math.random() * 5000);
+      }
+    }
+
+
   </script>
   </body></html>
