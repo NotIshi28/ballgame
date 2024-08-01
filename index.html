@@ -907,5 +907,110 @@
     }
 
 
+    function animateFirework(firework) {
+      let opacity = 1;
+      let scale = 1;
+      let frame = 0;
+  
+      function animate() {
+        frame++;
+        opacity -= 0.01;
+        scale += 0.02;
+        firework.style.opacity = opacity;
+        firework.style.transform = `scale(${scale})`;
+  
+        if (frame < 100) {
+          requestAnimationFrame(animate);
+        } else {
+          firework.remove();
+        }
+      }
+  
+      animate();
+    }
+  
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+  
+    function animate() {
+      requestAnimationFrame(animate);
+  
+      const delta = 0.016;
+      const maxSpeed = 5;
+      const friction = 0.98;
+  
+      acceleration.set(0, 0, 0);
+  
+      if (!gameWon) {
+        if (moveForward) acceleration.z -= 1;
+        if (moveBackward) acceleration.z += 1;
+        if (moveLeft) acceleration.x -= 1;
+        if (moveRight) acceleration.x += 1;
+      }
+    
+        acceleration.normalize().multiplyScalar(20);
+    
+        velocity.add(acceleration.multiplyScalar(delta));
+        velocity.multiplyScalar(friction);
+    
+        if (velocity.length() > maxSpeed) {
+          velocity.normalize().multiplyScalar(maxSpeed);
+        }
+    
+        const newPosition = ball.position.clone().add(velocity.clone().multiplyScalar(delta));
+      
+      
+      const collisionResult = checkCollision(newPosition);
+      if (collisionResult.collided) {
+        ball.position.copy(collisionResult.position);
+      } else {
+        ball.position.copy(newPosition);
+      }
+  
+      // Correct ball rotation
+      const rotationAxis = new THREE.Vector3(velocity.z, 0, -velocity.x).normalize();
+      const rotationAngle = velocity.length() * delta / 0.5;
+      ball.quaternion.premultiply(new THREE.Quaternion().setFromAxisAngle(rotationAxis, rotationAngle));
+  
+      if (!gameWon) {
+        const cameraOffset = new THREE.Vector3(0, 5, 7);
+        camera.position.copy(ball.position).add(cameraOffset);
+        camera.lookAt(ball.position);
+      }
+  
+      coins.forEach(coin => {
+        coin.rotation.y += 0.1; // Horizontal spinning
+      });
+  
+      // Animate clouds
+      clouds.forEach(cloud => {
+        cloud.position.x += 0.01;
+        if (cloud.position.x > 30) {
+          cloud.position.x = -30;
+        }
+      });
+  
+      checkCoinCollision();
+      if (checkHoleCollision()) {
+        return; // Stop further processing if the ball fell into a hole
+      }
+      checkWinCondition();
+  
+      renderer.render(scene, camera);
+    }
+  
+    window.addEventListener('resize', function() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  
+    init();
   </script>
   </body></html>
