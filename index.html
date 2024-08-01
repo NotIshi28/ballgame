@@ -202,5 +202,100 @@
       startTimer();
       animate();
     }
+
+
+    function startTimer() {
+      startTime = Date.now();
+      timerInterval = setInterval(updateTimer, 1);
+    }
+  
+    function updateTimer() {
+      const currentTime = Date.now();
+      const elapsedTime = new Date(currentTime - startTime);
+      const minutes = String(elapsedTime.getUTCMinutes()).padStart(2, '0');
+      const seconds = String(elapsedTime.getUTCSeconds()).padStart(2, '0');
+      const milliseconds = String(elapsedTime.getUTCMilliseconds()).padStart(3, '0');
+      document.getElementById('timer').textContent = `Time: ${minutes}:${seconds}.${milliseconds}`;
+    }
+  
+    function loadLevel(level) {
+      // Clear existing level
+      clearLevel();
+  
+      // Set background color based on level
+      if (level === 5) {
+        scene.background = new THREE.Color(0xff0000); // Red background for level 5
+      } else {
+        scene.background = new THREE.Color(0x87CEEB); // Sky blue background for other levels
+      }
+  
+      // Create new level
+      createBall();
+      createPlatform();
+      createWalls(level);
+      createCoins(level);
+      createHoles(level);
+      createClouds();
+      createWinPlatform(level);
+  
+      // Update level info
+      document.getElementById('levelInfo').textContent = `Level: ${level}`;
+      updateCoinCounter();
+    }
+  
+    function clearLevel() {
+      // Remove all objects from the scene except lights
+      while(scene.children.length > 0){ 
+        scene.remove(scene.children[0]); 
+      }
+      
+      // Re-add lights
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambientLight);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(5, 10, 7);
+      directionalLight.castShadow = true;
+      scene.add(directionalLight);
+      
+      // Improved shadow settings
+      directionalLight.shadow.mapSize.width = 4096;
+      directionalLight.shadow.mapSize.height = 4096;
+      directionalLight.shadow.camera.near = 1;
+      directionalLight.shadow.camera.far = 50;
+      directionalLight.shadow.camera.left = -25;
+      directionalLight.shadow.camera.right = 25;
+      directionalLight.shadow.camera.top = 25;
+      directionalLight.shadow.camera.bottom = -25;
+  
+      // Reset arrays and counters
+      walls = [];
+      coins = [];
+      holes = [];
+      clouds = [];
+      coinsRemaining = 0;
+    }
+  
+    function createBall() {
+      const geometry = new THREE.SphereGeometry(0.5, 32, 32);
+      const rainbowTexture = createRainbowTexture();
+      const material = new THREE.MeshPhongMaterial({ map: rainbowTexture });
+      ball = new THREE.Mesh(geometry, material);
+      ball.position.set(-9, 0.5, -9); // Starting position in the corner
+      ball.castShadow = true;
+      scene.add(ball);
+    }
+  
+    function createPlatform() {
+      const platformGeometry = new THREE.BoxGeometry(20, 0.1, 20);
+      const grassTexture = createGrassTexture();
+      const platformMaterial = new THREE.MeshPhongMaterial({ map: grassTexture });
+      platform = new THREE.Mesh(platformGeometry, platformMaterial);
+      platform.position.set(0, -0.05, 0);
+      platform.receiveShadow = true;
+      scene.add(platform);
+    }
+  
+
+
   </script>
   </body></html>
