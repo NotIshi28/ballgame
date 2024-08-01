@@ -70,6 +70,37 @@
       padding: 10px;
       border-radius: 5px;
     }
+
+    #timer {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 24px;
+      background-color: rgba(0,0,0,0.5);
+      padding: 10px;
+      border-radius: 5px;
+    }
+    @keyframes rainbow {
+      0% { color: red; }
+      14% { color: orange; }
+      28% { color: yellow; }
+      42% { color: green; }
+      56% { color: blue; }
+      70% { color: indigo; }
+      84% { color: violet; }
+      100% { color: red; }
+    }
+    #winMessage span {
+      display: inline-block;
+      animation: rainbow 5s linear infinite, bounce 0.5s ease-in-out infinite alternate;
+    }
+    @keyframes bounce {
+      from { transform: translateY(0); }
+      to { transform: translateY(-20px); }
+    }
   </style>
   </head>
   <body>
@@ -98,5 +129,78 @@
     let holes = [];
     let coinsRemaining = 0;
     let clouds = [];
+    let currentLevel = 1;
+    let totalLevels = 5;
+    let gameWon = false;
+    let startTime;
+    let timerInterval;
+    
+    // Sound effects
+    const sounds = {
+      coinCollect: new Howl({
+        src: ['https://freesound.org/data/previews/162/162805_2578041-lq.mp3'],
+        volume: 0.5
+      }),
+      levelComplete: new Howl({
+        src: ['https://freesound.org/data/previews/122/122255_1074082-lq.mp3'],
+        volume: 0.5
+      }),
+      fallInHole: new Howl({
+        src: ['https://freesound.org/data/previews/326/326133_3271346-lq.mp3'],
+        volume: 0.5
+      }),
+      backgroundMusic: new Howl({
+        src: ['https://freesound.org/data/previews/560/560738_12295155-lq.mp3'],
+        volume: 0.3,
+        loop: true,
+      }),
+      winSound: new Howl({
+        src: ['https://freesound.org/data/previews/258/258142_4631294-lq.mp3'],
+        volume: 0.5
+      })
+    };
+    
+    function init() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+  
+      // Improved Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      scene.add(ambientLight);
+      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      directionalLight.position.set(5, 10, 7);
+      directionalLight.castShadow = true;
+      scene.add(directionalLight);
+  
+      // Improved shadow settings
+      directionalLight.shadow.mapSize.width = 4096;
+      directionalLight.shadow.mapSize.height = 4096;
+      directionalLight.shadow.camera.near = 1;
+      directionalLight.shadow.camera.far = 50;
+      directionalLight.shadow.camera.left = -25;
+      directionalLight.shadow.camera.right = 25;
+      directionalLight.shadow.camera.top = 25;
+      directionalLight.shadow.camera.bottom = -25;
+  
+      // Enable shadow rendering
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  
+      loadLevel(currentLevel);
+  
+      document.addEventListener('keydown', onKeyDown);
+      document.addEventListener('keyup', onKeyUp);
+  
+      // Start background music after a short delay
+      setTimeout(() => {
+        sounds.backgroundMusic.play();
+      }, 3000);
+  
+      startTimer();
+      animate();
+    }
   </script>
   </body></html>
