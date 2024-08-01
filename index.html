@@ -609,5 +609,107 @@
     }
 
 
+    function createWall(x, y, z, width, height, depth, texture) {
+      const wallGeometry = new THREE.BoxGeometry(width, height, depth);
+      const wallMaterial = new THREE.MeshPhongMaterial({ map: texture });
+      const wall = new THREE.Mesh(wallGeometry, wallMaterial);
+      wall.position.set(x, y, z);
+      wall.castShadow = true;
+      wall.receiveShadow = true;
+      scene.add(wall);
+      walls.push(wall);
+  
+      // Adjust texture repeat based on wall dimensions
+      if (width > depth) {
+        texture.repeat.set(width, height);
+      } else {
+        texture.repeat.set(depth, height);
+      }
+      texture.needsUpdate = true;
+    }
+  
+    function createCoin(x, y, z, texture) {
+      const coinGeometry = new THREE.CylinderGeometry(0.3, 0.3, 0.05, 32);
+      const coinMaterial = new THREE.MeshPhongMaterial({ 
+        map: texture,
+        side: THREE.DoubleSide
+      });
+      const coin = new THREE.Mesh(coinGeometry, coinMaterial);
+      coin.position.set(x, y, z);
+      coin.rotation.z = Math.PI / 2; // Set the coin on its edge
+      coin.castShadow = true;
+      scene.add(coin);
+      coins.push(coin);
+    }
+  
+    function createCheckerboardTexture() {
+      const size = 4;
+      const data = new Uint8Array(size * size * 3);
+      for (let i = 0; i < size * size; i++) {
+        const x = i % size;
+        const y = Math.floor(i / size);
+        const color = (x + y) % 2 === 0 ? 255 : 0;
+        data[i * 3] = data[i * 3 + 1] = data[i * 3 + 2] = color;
+      }
+      const texture = new THREE.DataTexture(data, size, size, THREE.RGBFormat);
+      texture.magFilter = THREE.NearestFilter;
+      texture.needsUpdate = true;
+      return texture;
+    }
+  
+    function createClouds() {
+      const cloudTexture = createCloudTexture();
+      const cloudMaterial = new THREE.SpriteMaterial({ map: cloudTexture, transparent: true });
+  
+      // Add clouds above the stage
+      for (let i = 0; i < 20; i++) {
+        const cloud = new THREE.Sprite(cloudMaterial);
+        cloud.position.set(
+          Math.random() * 40 - 20,
+          Math.random() * 5 + 5,
+          Math.random() * 40 - 20
+        );
+        const scale = Math.random() * 2 + 1;
+        cloud.scale.set(scale, scale, 1);
+        scene.add(cloud);
+        clouds.push(cloud);
+      }
+  
+      // Add clouds underneath the stage
+      for (let i = 0; i < 30; i++) {
+        const cloud = new THREE.Sprite(cloudMaterial);
+        cloud.position.set(
+          Math.random() * 60 - 30,
+          Math.random() * 5 - 10,
+          Math.random() * 60 - 30
+        );
+        const scale = Math.random() * 3 + 2;
+        cloud.scale.set(scale, scale, 1);
+        scene.add(cloud);
+        clouds.push(cloud);
+      }
+    }
+  
+    function createCloudTexture() {
+      const canvas = document.createElement('canvas');
+      canvas.width = 128;
+      canvas.height = 128;
+      const context = canvas.getContext('2d');
+  
+      context.fillStyle = 'rgba(255, 255, 255, 0)';
+      context.fillRect(0, 0, 128, 128);
+  
+      context.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      context.beginPath();
+      context.arc(64, 64, 32,  0, Math.PI * 2);
+      context.arc(45, 64, 25, 0, Math.PI * 2);
+      context.arc(83, 64, 25, 0, Math.PI * 2);
+      context.fill();
+  
+      const texture = new THREE.CanvasTexture(canvas);
+      return texture;
+    }
+
+
   </script>
   </body></html>
