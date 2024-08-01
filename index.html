@@ -294,7 +294,112 @@
       platform.receiveShadow = true;
       scene.add(platform);
     }
+    
+
+    function createWalls(level) {
+      const brickTexture = createBrickTexture();
   
+      // Outer walls
+      createWall(0, 0.5, -10, 20, 1, 0.1, brickTexture);  // North wall
+      createWall(0, 0.5, 10, 20, 1, 0.1, brickTexture);   // South wall
+      createWall(-10, 0.5, 0, 0.1, 1, 20, brickTexture);  // West wall
+      createWall(10, 0.5, 0, 0.1, 1, 20, brickTexture);   // East wall
+  
+      // Level-specific walls
+      switch(level) {
+        case 1:
+          createWall(-7, 0.5, -3, 6, 1, 0.1, brickTexture);
+          createWall(7, 0.5, 3, 6, 1, 0.1, brickTexture);
+          createWall(-3, 0.5, 7, 0.1, 1, 6, brickTexture);
+          createWall(3, 0.5, -7, 0.1, 1, 6, brickTexture);
+          createWall(0, 0.5, 0, 10, 1, 0.1, brickTexture);
+          break;
+        case 2:
+          createWall(-5, 0.5, -5, 5, 1, 0.1, brickTexture);
+          createWall(5, 0.5, 5, 5, 1, 0.1, brickTexture);
+          createWall(0, 0.5, 0, 0.1, 1, 10, brickTexture);
+          break;
+        case 3:
+          createWall(-7, 0.5, -7, 5, 1, 0.1, brickTexture);
+          createWall(7, 0.5, 7, 5, 1, 0.1, brickTexture);
+          createWall(-7, 0.5, 7, 5, 1, 0.1, brickTexture);
+          createWall(7, 0.5, -7, 5, 1, 0.1, brickTexture);
+          break;
+        case 4:
+          createWall(-6, 0.5, -6, 8, 1, 0.1, brickTexture);
+          createWall(6, 0.5, 6, 8, 1, 0.1, brickTexture);
+          createWall(-6, 0.5, 6, 8, 1, 0.1, brickTexture);
+          createWall(6, 0.5, -6, 8, 1, 0.1, brickTexture);
+          createWall(0, 0.5, 0, 12, 1, 0.1, brickTexture);
+          createWall(0, 0.5, 0, 0.1, 1, 12, brickTexture);
+          break;
+        case 5:
+          // Maze-like structure for the final level
+          createWall(-5, 0.5, -5, 10, 1, 0.1, brickTexture);
+          createWall(5, 0.5, 5, 5, 1, 0.1, brickTexture);
+          createWall(-5, 0.5, 0, 10, 1, 0.1, brickTexture);
+          createWall(5, 0.5, 0, 5, 1, 0.1, brickTexture);
+          createWall(-5, 0.5, 5, 0.1, 1, 5, brickTexture);
+          createWall(5, 0.5, -5, 0.1, 1, 10, brickTexture);
+          createWall(0, 0.5, -5, 0.1, 1, 5,  brickTexture);
+          createWall(0, 0.5, 5, 0.1, 1, 5, brickTexture);
+          break;
+      }
+    }
+  
+    function createCoins(level) {
+      const coinTexture = createCoinTexture();
+      switch(level) {
+        case 1:
+          createCoin(-7, 0.5, -7, coinTexture);
+          createCoin(7, 0.5, -7, coinTexture);
+          createCoin(7, 0.5, 7, coinTexture);
+          createCoin(-5, 0.5, 2, coinTexture);
+          createCoin(5, 0.5, -2, coinTexture);
+          break;
+        case 2:
+          createCoin(-8, 0.5, -8, coinTexture);
+          createCoin(8, 0.5, -8, coinTexture);
+          createCoin(8, 0.5, 8, coinTexture);
+          createCoin(-8, 0.5, 8, coinTexture);
+          createCoin(0, 0.5, 0, coinTexture);
+          createCoin(-4, 0.5, 4, coinTexture);
+          createCoin(4, 0.5, -4, coinTexture);
+          break;
+        case 3:
+          for (let i = -8; i <= 8; i += 4) {
+            for (let j = -8; j <= 8; j += 4) {
+              if (i !== 0 || j !== 0) {
+                createCoin(i, 0.5, j, coinTexture);
+              }
+            }
+          }
+          break;
+        case 4:
+          for (let i = -7; i <= 7; i += 2) {
+            for (let j = -7; j <= 7; j += 2) {
+              if (Math.abs(i) % 4 !== 0 || Math.abs(j) % 4 !== 0) {
+                createCoin(i, 0.5, j, coinTexture);
+              }
+            }
+          }
+          break;
+        case 5:
+          createCoin(-7, 0.5, -7, coinTexture);
+          createCoin(-7, 0.5, 7, coinTexture);
+          createCoin(7, 0.5, -7, coinTexture);
+          createCoin(7, 0.5, 7, coinTexture);
+          createCoin(-2.5, 0.5, -2.5, coinTexture);
+          createCoin(-2.5, 0.5, 2.5, coinTexture);
+          createCoin(2.5, 0.5, -2.5, coinTexture);
+          createCoin(2.5, 0.5, 2.5, coinTexture);
+          break;
+      }
+      coinsRemaining = coins.length;
+      updateCoinCounter();
+    }
+  
+    
 
 
   </script>
